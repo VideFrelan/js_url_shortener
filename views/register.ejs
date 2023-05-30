@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+</head>
+<body>
+  <% include partials/header %>
+
+  <h1>Register</h1>
+
+  <form action="/register" method="POST">
+    <input type="text" name="username" placeholder="Username">
+    <input type="password" name="password" placeholder="Password">
+    <button type="submit">Register</button>
+  </form>
+
+  <p>Sudah punya akun? Silakan login <a href="/login">di sini</a>.</p>
+
+  <% include partials/flash %>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pemendek URL</title>
+</head>
+<body>
+  <% include partials/header %>
+
+  <h1>Selamat datang!</h1>
+
+  <% if (currentUser) { %>
+    <p>Halo, <%= currentUser.username %>! Anda sudah login.</p>
+    <form action="/shorten" method="POST">
+      <input type="text" name="originalUrl" placeholder="Masukkan URL">
+      <button type="submit">Pendekkan URL</button>
+    </form>
+  <% } else { %>
+    <p>Silakan login atau daftar untuk menggunakan fitur pemendek URL.</p>
+    <p>Jika Anda sudah memiliki akun, silakan login <a href="/login">di sini</a>.</p>
+    <p>Jika belum memiliki akun, silakan daftar <a href="/register">di sini</a>.</p>
+  <% } %>
+
+  <% include partials/flash %>
+</body>
+</html>
