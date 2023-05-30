@@ -9,10 +9,10 @@ const LocalStrategy = require('passport-local').Strategy;
 const app = express();
 
 // Konfigurasi MongoDB
+mongoose.set('strictQuery', false);
 mongoose.connect('mongodb://localhost/pemendek-url', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useCreateIndex: true,
 });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Koneksi database error:'));
@@ -24,7 +24,7 @@ db.once('open', () => {
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
-  email: String, // tambahan field email
+  email: String,
 });
 const User = mongoose.model('User', userSchema);
 
@@ -73,7 +73,7 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: false }));
 app.use(
   session({
-    secret: 'rahasia',
+    secret: 'secretKEY',
     resave: true,
     saveUninitialized: true,
   })
@@ -124,7 +124,7 @@ app.post('/register', (req, res) => {
     });
     newUser.save((err) => {
       if (err) throw err;
-      req.flash('success', 'Akun berhasil dibuat');
+      req.flash('success', 'Akun berhasil dibuat. Silakan login');
       res.redirect('/login');
     });
   });
@@ -133,37 +133,38 @@ app.post('/register', (req, res) => {
 // Logout
 app.get('/logout', (req, res) => {
   req.logout();
-  req.flash('success', 'Berhasil logout');
+  req.flash('success', 'Anda berhasil logout');
   res.redirect('/');
 });
 
 // Simpan URL yang dipendekkan
 app.post('/shorten', (req, res) => {
   const { originalUrl } = req.body;
-  const userId = req.user ? req.user._id : null;
+  const shortenedUrl = generateShortUrl();
+  const userId = req.user ? req.user._id : null; // Jika user sudah login, simpan ID user
 
   const newUrl = new Url({
     originalUrl: originalUrl,
-    shortenedUrl: generateShortUrl(),
+    shortenedUrl: shortenedUrl,
     userId: userId,
   });
 
   newUrl.save((err) => {
     if (err) throw err;
+    req.flash('success', 'URL berhasil dipendekkan');
     res.redirect('/');
   });
 });
 
 // Generate URL pendek acak
 function generateShortUrl() {
-  const characters =
-    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let shortUrl = '';
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
   for (let i = 0; i < 6; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    shortUrl += characters[randomIndex];
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  return shortUrl;
+  return result;
 }
 
 // Jalankan server

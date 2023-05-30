@@ -4,7 +4,7 @@
   <title>Pemendek URL</title>
 </head>
 <body>
-  <% include partials/header %>
+  <%- include('partials/header') %>
 
   <h1>Selamat datang!</h1>
 
@@ -20,6 +20,6 @@
     <p>Jika belum memiliki akun, silakan daftar <a href="/register">di sini</a>.</p>
   <% } %>
 
-  <% include partials/flash %>
+  <%- include('partials/flash') %>
 </body>
 </html>
